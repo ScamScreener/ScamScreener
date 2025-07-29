@@ -37,8 +37,8 @@ This tool is especially useful for:
 ## 📦 Getting Started
 
 ```bash
-git clone https://github.com/your-org/scamscreener.git
-cd scamscreener
+git clone https://github.com/ScamScreener/ScamScreener.git
+cd ScamScreener
 python -m venv venv
 source venv/bin/activate  # or venv\Scripts\activate on Windows
 pip install -r requirements.txt
