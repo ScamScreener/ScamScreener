@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScamScreener - Contact Us</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a1a;
+            color: white;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        .header {
+            padding: 20px 0;
+            border-bottom: 1px solid #2a2a2a;
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .logo::before {
+            content: "🛡️";
+            margin-right: 8px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: #4a9eff;
+        }
+
+        .cta-btn {
+            background: #4a9eff;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .cta-btn:hover {
+            background: #3a8eef;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 80px 0;
+        }
+
+        .hero-section {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .page-title {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ffffff 0%, #9ca3af 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-subtitle {
+            font-size: 20px;
+            color: #9ca3af;
+            margin-bottom: 20px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Contact Methods */
+        .contact-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 80px;
+        }
+
+        .contact-card {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+            border-radius: 16px;
+            padding: 40px 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .contact-card:hover {
+            transform: translateY(-10px);
+            border-color: #4a9eff;
+            box-shadow: 0 20px 40px rgba(74, 158, 255, 0.1);
+        }
+
+        .contact-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(74, 158, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin: 0 auto 20px;
+            transition: all 0.3s;
+        }
+
+        .contact-card:hover .contact-icon {
+            background: #4a9eff;
+            transform: scale(1.1);
+        }
+
+        .contact-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: white;
+        }
+
+        .contact-description {
+            font-size: 16px;
+            color: #9ca3af;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .contact-info {
+            font-size: 18px;
+            font-weight: 500;
+            color: #4a9eff;
+        }
+
+        /* Contact Form Section */
+        .contact-form-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: start;
+        }
+
+        .form-content {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+            border-radius: 16px;
+            padding: 40px;
+        }
+
+        .form-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: white;
+        }
+
+        .form-subtitle {
+            font-size: 16px;
+            color: #9ca3af;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: white;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            background: #1a1a1a;
+            border: 1px solid #3a3a3a;
+            border-radius: 8px;
+            padding: 15px;
+            color: white;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: #4a9eff;
+            box-shadow: 0 0 0 3px rgba(74, 158, 255, 0.1);
+        }
+
+        .form-input::placeholder, .form-textarea::placeholder {
+            color: #6b7280;
+        }
+
+        .form-textarea {
+            height: 120px;
+            resize: vertical;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: #4a9eff;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .submit-btn:hover {
+            background: #3a8eef;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(74, 158, 255, 0.4);
+        }
+
+        /* Info Section */
+        .info-section {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+            border-radius: 16px;
+            padding: 40px;
+        }
+
+        .info-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .info-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(74, 158, 255, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .info-content h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: white;
+        }
+
+        .info-content p {
+            font-size: 14px;
+            color: #9ca3af;
+            line-height: 1.5;
+        }
+
+        /* FAQ Section */
+        .faq-section {
+            margin-top: 100px;
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+            border-radius: 16px;
+            padding: 50px;
+        }
+
+        .faq-title {
+            font-size: 32px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .faq-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .faq-item {
+            background: #1a1a1a;
+            border: 1px solid #3a3a3a;
+            border-radius: 12px;
+            padding: 25px;
+        }
+
+        .faq-question {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .faq-answer {
+            font-size: 14px;
+            color: #9ca3af;
+            line-height: 1.6;
+        }
+
+        /* Social Links */
+        .social-section {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid #3a3a3a;
+        }
+
+        .social-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .social-link {
+            width: 50px;
+            height: 50px;
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #9ca3af;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .social-link:hover {
+            background: #4a9eff;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(74, 158, 255, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .page-title {
+                font-size: 36px;
+            }
+            
+            .contact-form-section {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+            
+            .contact-methods {
+                grid-template-columns: 1fr;
+            }
+            
+            .faq-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .social-links {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <div class="logo">ScamScreener</div>
+                <ul class="nav-links">
+                   <ul class="nav-links">
+                     <li><a href="index.html">Home</a></li>
+                     <li><a href="howitworks.html">How it Works</a></li>
+                     <li><a href="pricing.html">Pricing</a></li>
+                     <li><a href="contact.html" class="active">Contact</a></li>
+                     <li><a href="login.html" id="nav-login-link">Login</a></li>
+                     <li><a href="signup.html" id="nav-signup-link">Sign Up</a></li>
+                     <li><a href="#" id="nav-logout-link" onclick="logout()">Logout</a></li>
+</ul>
+                </ul>
+                <a href="try.html" class="cta-btn">Try for free</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="main-content">
+            <div class="hero-section">
+                <h1 class="page-title">Get in Touch</h1>
+                <p class="page-subtitle">
+                    Have questions about ScamScreener? Need help with scam detection? We're here to help you stay safe online.
+                </p>
+            </div>
+
+            <div class="contact-methods">
+                <div class="contact-card">
+                    <div class="contact-icon">📧</div>
+                    <h3 class="contact-title">Email Support</h3>
+                    <p class="contact-description">Get help from our support team within 24 hours</p>
+                    <div class="contact-info">support@scamscreener.com</div>
+                </div>
+
+                <div class="contact-card">
+                    <div class="contact-icon">💬</div>
+                    <h3 class="contact-title">Live Chat</h3>
+                    <p class="contact-description">Chat with us in real-time during business hours</p>
+                    <div class="contact-info">Available 9 AM - 6 PM EST</div>
+                </div>
+
+                <div class="contact-card">
+                    <div class="contact-icon">📞</div>
+                    <h3 class="contact-title">Phone Support</h3>
+                    <p class="contact-description">Call us for urgent matters and enterprise inquiries</p>
+                    <div class="contact-info">+1 (555) 123-4567</div>
+                </div>
+            </div>
+
+            <div class="contact-form-section">
+                <div class="form-content">
+                    <h2 class="form-title">Send us a Message</h2>
+                    <p class="form-subtitle">
+                        Fill out the form below and we'll get back to you as soon as possible.
+                    </p>
+
+                    <form onsubmit="submitContactForm(event)">
+                        <div class="form-group">
+                            <label class="form-label">Full Name *</label>
+                            <input type="text" class="form-input" placeholder="Enter your full name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Email Address *</label>
+                            <input type="email" class="form-input" placeholder="Enter your email" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Company (Optional)</label>
+                            <input type="text" class="form-input" placeholder="Enter your company name">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Subject *</label>
+                            <select class="form-select" required>
+                                <option value="">Select a subject</option>
+                                <option value="general">General Inquiry</option>
+                                <option value="support">Technical Support</option>
+                                <option value="billing">Billing Question</option>
+                                <option value="partnership">Partnership</option>
+                                <option value="feedback">Feedback</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Message *</label>
+                            <textarea class="form-textarea" placeholder="Tell us how we can help you..." required></textarea>
+                        </div>
+
+                        <button type="submit" class="submit-btn">Send Message</button>
+                    </form>
+                </div>
+
+                <div class="info-section">
+                    <h3 class="info-title">Contact Information</h3>
+                    
+                    <div class="info-item">
+                        <div class="info-icon">🏢</div>
+                        <div class="info-content">
+                            <h4>Office Address</h4>
+                            <p>123 Naupada <br>Thane District,400606<br>India</p>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon">🕒</div>
+                        <div class="info-content">
+                            <h4>Business Hours</h4>
+                            <p>Monday - Friday: 9:00 AM - 6:00 PM (IST)<br>Saturday: 10:00 AM - 4:00 PM (EST)<br>Sunday: Closed</p>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon">⚡</div>
+                        <div class="info-content">
+                            <h4>Response Time</h4>
+                            <p>Email: Within 24 hours<br>Live Chat: Immediate<br>Phone: Immediate during business hours</p>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon">🌍</div>
+                        <div class="info-content">
+                            <h4>Global Support</h4>
+                            <p>We provide support in English and are expanding to multiple languages to serve our global user base.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-section">
+                <h2 class="faq-title">Frequently Asked Questions</h2>
+                <div class="faq-grid">
+                    <div class="faq-item">
+                        <h4 class="faq-question">How quickly do you respond to support requests?</h4>
+                        <p class="faq-answer">We aim to respond to all email inquiries within 24 hours. Live chat and phone support are available during business hours for immediate assistance.</p>
+                    </div>
+
+                    <div class="faq-item">
+                        <h4 class="faq-question">Do you offer technical support for API integration?</h4>
+                        <p class="faq-answer">Yes, our enterprise customers receive dedicated technical support for API integration, including documentation, code examples, and direct developer assistance.</p>
+                    </div>
+
+                    <div class="faq-item">
+                        <h4 class="faq-question">Can I schedule a demo of ScamScreener?</h4>
+                        <p class="faq-answer">Absolutely! Contact our sales team to schedule a personalized demo. We'll show you how ScamScreener can protect your organization from job scams.</p>
+                    </div>
+
+                    <div class="faq-item">
+                        <h4 class="faq-question">Is there a bulk discount for large organizations?</h4>
+                        <p class="faq-answer">Yes, we offer custom pricing for organizations with large user bases. Contact our sales team to discuss enterprise pricing options.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="social-section">
+                <h3 class="social-title">Follow Us</h3>
+                <div class="social-links">
+                    <a href="#" class="social-link">📘</a>
+                    <a href="#" class="social-link">🐦</a>
+                    <a href="#" class="social-link">💼</a>
+                    <a href="#" class="social-link">📷</a>
+                    <a href="#" class="social-link">🎥</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function submitContactForm(event) {
+            event.preventDefault();
+            
+            const submitBtn = document.querySelector('.submit-btn');
+            const originalText = submitBtn.textContent;
+            
+            submitBtn.textContent = 'Sending...';
+            submitBtn.disabled = true;
+            
+            setTimeout(() => {
+                alert('Thank you for your message! We\'ll get back to you within 24 hours.');
+                
+                // Reset form
+                event.target.reset();
+                
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }, 2000);
+        }
+
+        // Add smooth animations to contact cards
+        document.querySelectorAll('.contact-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Add focus effects to form inputs
+        document.querySelectorAll('.form-input, .form-textarea, .form-select').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.style.transform = 'scale(1.02)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+<script src="static/script.js"></script>
+</body>
+</html>

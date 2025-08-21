@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScamScreener - Pricing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a1a;
+            color: white;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        .header {
+            padding: 20px 0;
+            border-bottom: 1px solid #2a2a2a;
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .logo::before {
+            content: "🛡️";
+            margin-right: 8px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: #4a9eff;
+        }
+
+        .cta-btn {
+            background: #4a9eff;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .cta-btn:hover {
+            background: #3a8eef;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .hero-section {
+            margin-bottom: 80px;
+        }
+
+        .page-title {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ffffff 0%, #9ca3af 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-subtitle {
+            font-size: 20px;
+            color: #9ca3af;
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Billing Toggle */
+        .billing-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 60px;
+        }
+
+        .toggle-label {
+            font-size: 16px;
+            color: #9ca3af;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: #3a3a3a;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: #4a9eff;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(30px);
+        }
+
+        .discount-badge {
+            background: #00ff88;
+            color: #1a1a1a;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        /* Pricing Cards */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+            border-radius: 16px;
+            padding: 40px 30px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            border-color: #4a9eff;
+            box-shadow: 0 20px 40px rgba(74, 158, 255, 0.1);
+        }
+
+        .pricing-card.popular {
+            border-color: #4a9eff;
+            background: linear-gradient(135deg, #2a2a2a 0%, #1f2937 100%);
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #4a9eff;
+            color: white;
+            padding: 6px 20px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .plan-name {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .plan-description {
+            font-size: 16px;
+            color: #9ca3af;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .plan-price {
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .price-currency {
+            font-size: 24px;
+            font-weight: 600;
+            color: #9ca3af;
+        }
+
+        .price-amount {
+            font-size: 48px;
+            font-weight: 700;
+            color: white;
+            margin: 0 5px;
+        }
+
+        .price-period {
+            font-size: 16px;
+            color: #9ca3af;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin-bottom: 40px;
+            text-align: left;
+        }
+
+        .plan-features li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+            font-size: 14px;
+            color: #9ca3af;
+        }
+
+        .plan-features li::before {
+            content: "✓";
+            color: #00ff88;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .plan-features .unavailable::before {
+            content: "✗";
+            color: #ff4757;
+        }
+
+        .plan-btn {
+            width: 100%;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .plan-btn.primary {
+            background: #4a9eff;
+            color: white;
+        }
+
+        .plan-btn.primary:hover {
+            background: #3a8eef;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(74, 158, 255, 0.4);
+        }
+
+        .plan-btn.secondary {
+            background: transparent;
+            color: #4a9eff;
+            border: 2px solid #4a9eff;
+        }
+
+        .plan-btn.secondary:hover {
+            background: #4a9eff;
+            color: white;
+        }
+
+        /* FAQ Section */
+        .faq-section {
+            margin-top: 100px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: left;
+        }
+
+        .faq-title {
+            font-size: 36px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .faq-item {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .faq-question {
+            padding: 20px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s;
+        }
+
+        .faq-question:hover {
+            background: #3a3a3a;
+        }
+
+        .faq-answer {
+            padding: 0 20px 20px;
+            font-size: 16px;
+            color: #9ca3af;
+            line-height: 1.6;
+            display: none;
+        }
+
+        .faq-item.active .faq-answer {
+            display: block;
+        }
+
+        .faq-icon {
+            font-size: 24px;
+            transition: transform 0.3s;
+        }
+
+        .faq-item.active .faq-icon {
+            transform: rotate(45deg);
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .page-title {
+                font-size: 36px;
+            }
+            
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .billing-toggle {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <div class="logo">ScamScreener</div>
+                <ul class="nav-links">
+                    <ul class="nav-links">
+                      <li><a href="index.html">Home</a></li>
+                      <li><a href="howitworks.html">How it Works</a></li>
+                      <li><a href="pricing.html" class="active">Pricing</a></li>
+                      <li><a href="contact.html">Contact</a></li>
+                      <li><a href="about.html">About</a></li>
+                      <li><a href="report.html">Report Scam</a></li>
+                      <li><a href="dashboard.html">Dashboard</a></li>
+                      <li><a href="login.html" id="nav-login-link">Login</a></li>
+                      <li><a href="signup.html" id="nav-signup-link">Sign Up</a></li>
+                      <li><a href="#" id="nav-logout-link" onclick="logout()">Logout</a></li>
+</ul>
+                </ul>
+                <a href="try.html" class="cta-btn">Try for free</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="main-content">
+            <div class="hero-section">
+                <h1 class="page-title">Simple, Transparent Pricing</h1>
+                <p class="page-subtitle">
+                    Choose the perfect plan for your scam detection needs. Start with our free tier and upgrade as you grow.
+                </p>
+                
+                <div class="billing-toggle">
+                    <span class="toggle-label">Monthly</span>
+                    <div class="toggle-switch" onclick="toggleBilling()">
+                        <div class="toggle-slider"></div>
+                    </div>
+                    <span class="toggle-label">Yearly</span>
+                    <span class="discount-badge">Save 20%</span>
+                </div>
+            </div>
+
+            <div class="pricing-grid">
+                <!-- Free Plan -->
+                <div class="pricing-card">
+                    <div class="plan-name">Free</div>
+                    <div class="plan-description">Perfect for occasional use and getting started with scam detection.</div>
+                    <div class="plan-price">
+                        <span class="price-currency">$</span>
+                        <span class="price-amount">0</span>
+                        <span class="price-period">/ month</span>
+                    </div>
+                    <ul class="plan-features">
+                        <li>5 scam checks per month</li>
+                        <li>Basic risk assessment</li>
+                        <li>Email support</li>
+                        <li class="unavailable">Advanced analytics</li>
+                        <li class="unavailable">API access</li>
+                        <li class="unavailable">Priority support</li>
+                    </ul>
+                    <a href="#" class="plan-btn secondary">Get Started Free</a>
+                </div>
+
+                <!-- Pro Plan -->
+                <div class="pricing-card popular">
+                    <div class="popular-badge">Most Popular</div>
+                    <div class="plan-name">Pro</div>
+                    <div class="plan-description">Ideal for job seekers and small businesses with regular scanning needs.</div>
+                    <div class="plan-price">
+                        <span class="price-currency">$</span>
+                        <span class="price-amount" id="pro-price">19</span>
+                        <span class="price-period">/ month</span>
+                    </div>
+                    <ul class="plan-features">
+                        <li>100 scam checks per month</li>
+                        <li>Advanced risk assessment</li>
+                        <li>Detailed reporting</li>
+                        <li>Priority email support</li>
+                        <li>Basic analytics dashboard</li>
+                        <li class="unavailable">API access</li>
+                    </ul>
+                    <a href="#" class="plan-btn primary">Start Pro Trial</a>
+                </div>
+
+                <!-- Enterprise Plan -->
+                <div class="pricing-card">
+                    <div class="plan-name">Enterprise</div>
+                    <div class="plan-description">For large organizations requiring extensive scam protection capabilities.</div>
+                    <div class="plan-price">
+                        <span class="price-currency">$</span>
+                        <span class="price-amount" id="enterprise-price">99</span>
+                        <span class="price-period">/ month</span>
+                    </div>
+                    <ul class="plan-features">
+                        <li>Unlimited scam checks</li>
+                        <li>Advanced AI analysis</li>
+                        <li>Custom reporting</li>
+                        <li>24/7 phone & email support</li>
+                        <li>Advanced analytics</li>
+                        <li>Full API access</li>
+                    </ul>
+                    <a href="#" class="plan-btn secondary">Contact Sales</a>
+                </div>
+            </div>
+
+            <!-- FAQ Section -->
+            <div class="faq-section">
+                <h2 class="faq-title">Frequently Asked Questions</h2>
+                
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>How accurate is the scam detection?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        Our AI-powered system achieves over 95% accuracy in detecting job scams by analyzing multiple factors including language patterns, sender domains, and known scam indicators.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Can I upgrade or downgrade my plan anytime?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        Yes, you can change your plan at any time. Upgrades take effect immediately, while downgrades will apply at the start of your next billing cycle.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Is there a free trial for paid plans?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        Yes, we offer a 7-day free trial for our Pro plan. No credit card required. You can cancel anytime during the trial period.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>What payment methods do you accept?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        We accept all major credit cards (Visa, MasterCard, American Express), PayPal, and bank transfers for enterprise customers.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Do you offer refunds?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        Yes, we offer a 30-day money-back guarantee for all paid plans. If you're not satisfied, contact our support team for a full refund.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let isYearly = false;
+
+        function toggleBilling() {
+            const toggle = document.querySelector('.toggle-switch');
+            const proPrice = document.getElementById('pro-price');
+            const enterprisePrice = document.getElementById('enterprise-price');
+            
+            isYearly = !isYearly;
+            toggle.classList.toggle('active');
+            
+            if (isYearly) {
+                proPrice.textContent = '15';
+                enterprisePrice.textContent = '79';
+            } else {
+                proPrice.textContent = '19';
+                enterprisePrice.textContent = '99';
+            }
+        }
+
+        function toggleFAQ(element) {
+            const faqItem = element.parentElement;
+            const isActive = faqItem.classList.contains('active');
+            
+            // Close all FAQ items
+            document.querySelectorAll('.faq-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Open clicked item if it wasn't active
+            if (!isActive) {
+                faqItem.classList.add('active');
+            }
+        }
+
+        // Add hover effects to pricing cards
+        document.querySelectorAll('.pricing-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+    <script src="static/script.js"></script>
+</body>
+</html>

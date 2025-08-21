@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ScamScreener - Dashboard</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1a1a1a;
+      color: white;
+      min-height: 100vh;
+    }
+    .container { max-width: 1200px; margin: auto; padding: 20px; }
+    header {
+      background: rgba(26, 26, 26, 0.95);
+      padding: 20px 0;
+      border-bottom: 1px solid #2a2a2a;
+      backdrop-filter: blur(10px);
+    }
+    nav { display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-weight: 600; font-size: 20px; }
+    .logo::before { content: "🛡️"; margin-right: 8px; }
+    ul.nav-links {
+      list-style: none;
+      display: flex;
+      gap: 25px;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: #9ca3af;
+      font-size: 14px;
+      transition: 0.3s;
+    }
+    .nav-links a:hover, .nav-links a.active {
+      color: #4a9eff;
+    }
+
+    .dashboard {
+      margin-top: 40px;
+    }
+    h1 {
+      font-size: 28px;
+      margin-bottom: 20px;
+      text-align: center;
+      color: #4a9eff;
+    }
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin-bottom: 40px;
+    }
+    .stat-box {
+      background: #2a2a2a;
+      padding: 20px 40px;
+      border-radius: 12px;
+      border: 1px solid #3a3a3a;
+      text-align: center;
+    }
+    .stat-box h2 {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+    .stat-box p {
+      font-size: 14px;
+      color: #9ca3af;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: #2a2a2a;
+      border: 1px solid #3a3a3a;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    table th, table td {
+      padding: 14px;
+      border-bottom: 1px solid #3a3a3a;
+      font-size: 14px;
+      text-align: left;
+    }
+    table th {
+      background: #1f1f1f;
+      color: #4a9eff;
+    }
+    table tr:last-child td {
+      border-bottom: none;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 60px;
+      padding: 20px 0;
+      border-top: 1px solid #3a3a3a;
+      color: #6b7280;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <nav>
+        <div class="logo">ScamScreener</div>
+        <ul class="nav-links">
+         <ul class="nav-links">
+           <li><a href="index.html">Home</a></li>
+           <li><a href="howitworks.html">How it Works</a></li>
+           <li><a href="pricing.html">Pricing</a></li>
+           <li><a href="report.html">Report</a></li>
+           <li><a href="dashboard.html" class="active">Dashboard</a></li>
+           <li><a href="about.html">About</a></li>
+           <li><a href="contact.html">Contact</a></li>
+           <li><a href="login.html" id="nav-login-link">Login</a></li>
+           <li><a href="signup.html" id="nav-signup-link">Sign Up</a></li>
+           <li><a href="#" id="nav-logout-link" onclick="logout()">Logout</a></li>
+</ul>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container dashboard">
+    <h1>Welcome to Your Dashboard</h1>
+
+    <div class="stats">
+      <div class="stat-box">
+        <h2 id="totalUsers">0</h2>
+        <p>Total Users</p>
+      </div>
+      <div class="stat-box">
+        <h2 id="totalReports">0</h2>
+        <p>Total Reports</p>
+      </div>
+    </div>
+
+    <h2>Recent Scam Reports</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Message</th>
+          <th>Scam Type</th>
+          <th>Company</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody id="reportsTable">
+        <tr><td colspan="5" style="text-align:center; color:#9ca3af;">Loading...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <footer>
+    &copy; 2025 ScamScreener. All rights reserved.
+  </footer>
+
+  <script>
+    async function fetchDashboardData() {
+      const token = localStorage.getItem("access_token");
+      if (!token) {
+        alert("⚠️ Please log in first.");
+        window.location.href = "login.html";
+        return;
+      }
+
+      try {
+        // Fetch counts
+        const countsRes = await fetch("http://localhost:5000/dashboard/stats", {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        const counts = await countsRes.json();
+        if (countsRes.ok) {
+          document.getElementById("totalUsers").textContent = counts.total_users;
+          document.getElementById("totalReports").textContent = counts.total_reports;
+        }
+
+        // Fetch reports
+        const reportsRes = await fetch("http://localhost:5000/dashboard/reports", {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        const reports = await reportsRes.json();
+        const reportsTable = document.getElementById("reportsTable");
+        reportsTable.innerHTML = "";
+
+        if (reportsRes.ok && reports.length > 0) {
+          reports.forEach(r => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+              <td>${r.id}</td>
+              <td>${r.message}</td>
+              <td>${r.scam_type}</td>
+              <td>${r.company || "-"}</td>
+              <td>${new Date(r.created_at).toLocaleString()}</td>
+            `;
+            reportsTable.appendChild(tr);
+          });
+        } else {
+          reportsTable.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#9ca3af;">No reports yet</td></tr>`;
+        }
+      } catch (err) {
+        console.error("Dashboard fetch error:", err);
+      }
+    }
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = "login.html";
+    }
+
+    fetchDashboardData();
+  </script>
+  <script src="static/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ScamScreener - Sign Up</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1a1a1a;
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+    .auth-box {
+      background: #2a2a2a;
+      padding: 40px;
+      border-radius: 12px;
+      border: 1px solid #3a3a3a;
+      width: 100%;
+      max-width: 400px;
+    }
+    h1 {
+      font-size: 28px;
+      margin-bottom: 20px;
+      text-align: center;
+      color: #4a9eff;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+    input[type="text"], input[type="email"], input[type="password"] {
+      width: 100%;
+      padding: 14px;
+      background: #1a1a1a;
+      border: 1px solid #3a3a3a;
+      border-radius: 8px;
+      color: white;
+      font-size: 14px;
+    }
+    input:focus {
+      border-color: #4a9eff;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(74,158,255,0.2);
+    }
+    .submit-btn {
+      width: 100%;
+      padding: 14px;
+      background: #4a9eff;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .submit-btn:hover {
+      background: #3a8eef;
+      transform: translateY(-2px);
+    }
+    .switch-link {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+      color: #9ca3af;
+    }
+    .switch-link a {
+      color: #4a9eff;
+      text-decoration: none;
+    }
+    .error-message {
+      color: #ff4a4a;
+      font-size: 14px;
+      text-align: center;
+      margin-top: 10px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-box">
+    <h1>Sign Up</h1>
+    <form id="signupForm">
+      <div class="form-group">
+        <label for="signupUsername">Username</label>
+        <input type="text" id="signupUsername" required />
+      </div>
+      <div class="form-group">
+        <label for="signupEmail">Email</label>
+        <input type="email" id="signupEmail" required />
+      </div>
+      <div class="form-group">
+        <label for="signupFirstName">First Name (Optional)</label>
+        <input type="text" id="signupFirstName" />
+      </div>
+      <div class="form-group">
+        <label for="signupLastName">Last Name (Optional)</label>
+        <input type="text" id="signupLastName" />
+      </div>
+      <div class="form-group">
+        <label for="signupPassword">Password</label>
+        <input type="password" id="signupPassword" required />
+      </div>
+      <button class="submit-btn" type="submit">Create Account</button>
+      <div class="error-message" id="errorMessage"></div>
+    </form>
+    <div class="switch-link">
+      Already have an account? <a href="login.html">Login</a>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('signupForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const username = document.getElementById('signupUsername').value.trim();
+      const email = document.getElementById('signupEmail').value.trim();
+      const firstName = document.getElementById('signupFirstName').value.trim();
+      const lastName = document.getElementById('signupLastName').value.trim();
+      const password = document.getElementById('signupPassword').value.trim();
+      const errorMessage = document.getElementById('errorMessage');
+
+      if (!username || !email || !password) {
+        errorMessage.textContent = 'Please fill in all required fields';
+        errorMessage.style.display = 'block';
+        return;
+      }
+
+      try {
+        const response = await fetch('http://localhost:5000/auth/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username,
+            email,
+            password,
+            first_name: firstName || null,
+            last_name: lastName || null
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          alert('✅ Account created successfully! You can now log in.');
+          window.location.href = 'login.html';
+        } else {
+          errorMessage.textContent = data.error || 'Signup failed';
+          errorMessage.style.display = 'block';
+        }
+      } catch (error) {
+        errorMessage.textContent = `An error occurred: ${error.message}`;
+        errorMessage.style.display = 'block';
+      }
+    });
+  </script>
+  <script src="static/script.js"></script>
+</body>
+</html>
