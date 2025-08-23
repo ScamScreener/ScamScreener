@@ -1,398 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ScamScreener - Detect Fake Job Offers</title>
-  <style>
-    /* [Your original styles remain untouched — full design preserved] */
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #1a1a1a;
-      color: white;
-      min-height: 100vh;
-    }
-    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-    .header { padding: 20px 0; border-bottom: 1px solid #2a2a2a; background: rgba(26, 26, 26, 0.95); backdrop-filter: blur(10px); }
-    .nav { display: flex; justify-content: space-between; align-items: center; }
-    .logo { display: flex; align-items: center; font-size: 20px; font-weight: 600; }
-    .logo::before { content: "🛡️"; margin-right: 8px; }
-    .nav-links { display: flex; gap: 30px; list-style: none; }
-    .nav-links a { color: #9ca3af; text-decoration: none; font-size: 14px; transition: color 0.3s; }
-    .nav-links a:hover { color: #4a9eff; }
-    .sign-up-btn { background: #4a9eff; color: white; padding: 8px 20px; border-radius: 20px; text-decoration: none; font-size: 14px; transition: background 0.3s; }
-    .sign-up-btn:hover { background: #3a8eef; }
-
-    .main-content { text-align: center; padding: 80px 0; }
-    .hero-title {
-      font-size: 48px;
-      font-weight: 700;
-      margin-bottom: 20px;
-      background: linear-gradient(135deg, #ffffff 0%, #b8c5d6 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .hero-subtitle { font-size: 18px; color: #9ca3af; margin-bottom: 50px; }
-    .form-section { max-width: 500px; margin: 0 auto 60px; }
-    .input-container { position: relative; margin-bottom: 30px; }
-    .job-input {
-      width: 100%;
-      height: 150px;
-      background: #2a2a2a;
-      border: 1px solid #3a3a3a;
-      border-radius: 10px;
-      padding: 20px;
-      color: white;
-      font-size: 16px;
-      resize: vertical;
-      font-family: inherit;
-    }
-    .job-input::placeholder { color: #6b7280; }
-    .job-input:focus { outline: none; border-color: #4a9eff; box-shadow: 0 0 20px rgba(74, 158, 255, 0.3); }
-    .check-btn {
-      background: #4a9eff;
-      color: white;
-      border: none;
-      padding: 12px 30px;
-      border-radius: 25px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin: 0 auto;
-    }
-    .check-btn:hover {
-      background: #3a8eef;
-      transform: translateY(-2px);
-      box-shadow: 0 10px 30px rgba(74, 158, 255, 0.4);
-    }
-    .check-btn::before { content: "🔍"; }
-
-    .results-section {
-      max-width: 800px;
-      margin: 0 auto;
-      background: #2a2a2a;
-      border-radius: 15px;
-      padding: 40px;
-      border: 1px solid #3a3a3a;
-    }
-    .results-title { font-size: 24px; font-weight: 600; margin-bottom: 30px; text-align: left; }
-    
-    .analysis-summary {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 30px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid #3a3a3a;
-    }
-    
-    .risk-score, .risk-level-display {
-      text-align: center;
-      flex-grow: 1;
-    }
-
-    .risk-label { font-size: 18px; color: #9ca3af; }
-    .risk-percentage { font-size: 48px; font-weight: 700; margin-top: 10px; }
-    .progress-bar {
-      width: 100%;
-      height: 8px;
-      background: #3a3a3a;
-      border-radius: 4px;
-      overflow: hidden;
-      margin-top: 10px;
-    }
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #4a9eff 0%, #00d4ff 100%);
-      width: 0%;
-      border-radius: 4px;
-      transition: width 2s ease-in-out;
-    }
-
-    .risk-level-display .level {
-      font-size: 32px;
-      font-weight: 700;
-      color: #00d4ff;
-    }
-    .risk-level-display .recommendation {
-      font-size: 16px;
-      color: #9ca3af;
-      margin-top: 8px;
-    }
-
-    .flags-section { margin: 30px 0; }
-    .flags-title { font-size: 18px; font-weight: 600; margin-bottom: 15px; color: #9ca3af; }
-    .flag-list {
-      list-style: none;
-      padding: 0;
-      text-align: left;
-    }
-    .flag-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 8px 0;
-      color: #e0e0e0;
-    }
-    .flag-item::before {
-      content: "●";
-      color: var(--dot-color);
-      margin-right: 10px;
-    }
-    
-    .action-buttons {
-      display: flex;
-      gap: 20px;
-      justify-content: center;
-      margin-top: 40px;
-    }
-    .action-btn {
-      padding: 12px 25px;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 500;
-      text-decoration: none;
-      transition: all 0.3s;
-      border: none;
-      cursor: pointer;
-    }
-    .download-btn {
-      background: #2a2a2a;
-      color: white;
-      border: 1px solid #3a3a3a;
-    }
-    .download-btn:hover { background: #3a3a3a; }
-    .report-btn {
-      background: #ff4757;
-      color: white;
-    }
-    .report-btn:hover { background: #ff3742; }
-
-    @media (max-width: 768px) {
-      .hero-title { font-size: 36px; }
-      .nav-links { display: none; }
-      .results-section { padding: 20px; }
-      .action-buttons { flex-direction: column; }
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ScamScreener - Detect Fake Job Offers</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-  <header class="header">
-    <div class="container">
-      <nav class="nav">
-        <div class="logo">ScamScreener</div>
-        <ul class="nav-links">
-          <ul class="nav-links">
-            <li><a href="index.html" class="active">Home</a></li>
-            <li><a href="dashboard.html">Dashboard</a></li>
-            <li><a href="howitworks.html">How it Works</a></li>
-            <li><a href="about.html">About</a></li>
-            <li><a href="report.html">Report Scam</a></li>
-            <li><a href="pricing.html">Pricing</a></li>
-           <li><a href="contact.html">Contact</a></li>
-           <li><a href="login.html" id="nav-login-link">Login</a></li>
-           <li><a href="signup.html" id="nav-signup-link">Sign Up</a></li>
-           <li><a href="#" id="nav-logout-link" onclick="logout()">Logout</a></li>
+  <header>
+    <div class="container">
+      <nav>
+        <div class="logo">ScamScreener</div>
+        <ul class="nav-links">
+         <ul class="nav-links">
+           <li><a href="index.html" class="active">Home</a></li>
+           <li><a href="dashboard.html">Dashboard</a></li>
+           <li><a href="howitworks.html">How it Works</a></li>
+           <li><a href="pricing.html">Pricing</a></li>
+           <li><a href="report.html">Report</a></li>           
+           <li><a href="about.html">About</a></li>
+           <li><a href="contact.html">Contact</a></li>
+           <li><a href="login.html" id="nav-login-link">Login</a></li>
+           <li><a href="signup.html" id="nav-signup-link">Sign Up</a></li>
+           <li><a href="#" id="nav-logout-link" onclick="logout()">Logout</a></li>
 </ul>
-        <a href="signup.html" class="sign-up-btn">Sign Up</a>
-      </nav>
-    </div>
-  </header>
+        </ul>
+      </nav>
+    </div>
+  </header>
 
-  <main class="container">
-    <div class="main-content">
-      <h1 class="hero-title">Detect Fake Job Offers Instantly</h1>
-      <p class="hero-subtitle">Paste the job offer message or email below to check for potential scams.</p>
+  <main class="container">
+    <div class="main-content">
+      <h1 class="hero-title">Detect Fake Job Offers Instantly</h1>
+      <p class="hero-subtitle">Paste the job offer message or email below to check for potential scams using our advanced AI detection system.</p>
 
-      <div class="form-section">
-        <div class="input-container">
-          <textarea 
-            class="job-input"
-            id="jobOffer"
-            placeholder="Paste job offer here"
-          ></textarea>
-        </div>
-        <button class="check-btn" onclick="analyzeJobOffer()">Check Now</button>
-      </div>
+      <div class="form-section">
+        <div class="input-container">
+          <textarea 
+            class="job-input"
+            id="jobOffer"
+            placeholder="Paste job offer content here..."
+            aria-label="Job offer text to analyze"
+          ></textarea>
+        </div>
+        <button class="check-btn" onclick="analyzeJobOffer()" aria-describedby="analysis-help">
+          Check Now
+        </button>
+        <div id="analysis-help" style="display: none;">This will analyze your job offer for potential scam indicators</div>
+      </div>
 
-      <div class="results-section" id="results" style="display: none;">
-        <h2 class="results-title">Analysis Results</h2>
+      <div class="results-section" id="results" style="display: none;" role="region" aria-label="Analysis results">
+        <h2 class="results-title">Analysis Results</h2>
 
-        <div class="analysis-summary">
-            <div class="risk-score">
-                <div class="risk-label">Scam Risk Score</div>
-                <div class="risk-percentage" id="risk-score-value">0%</div>
-            </div>
-            <div class="risk-level-display">
-                <div class="level" id="risk-level"></div>
-                <div class="recommendation" id="recommendation"></div>
-            </div>
-        </div>
+        <div class="analysis-summary">
+            <div class="risk-score">
+                <div class="risk-label">Scam Risk Score</div>
+                <div class="risk-percentage" id="risk-score-value" aria-live="polite">0%</div>
+            </div>
+            <div class="risk-level-display">
+                <div class="level" id="risk-level" aria-live="polite"></div>
+                <div class="recommendation" id="recommendation"></div>
+            </div>
+        </div>
 
-        <div class="progress-bar">
-          <div class="progress-fill" id="progress-fill"></div>
-        </div>
-        
-        <div class="flags-section">
-          <h3 class="flags-title">Flags Detected</h3>
-          <ul class="flag-list" id="flag-list">
-          </ul>
-        </div>
-        
-        <div class="action-buttons">
-          <button class="action-btn download-btn" onclick="downloadReport()">Download Report</button>
-          <a href="report.html" class="action-btn report-btn">Report as Scam</a>
-        </div>
-      </div>
-    </div>
-  </main>
+        <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        
+        <div class="flags-section">
+          <h3 class="flags-title">Flags Detected</h3>
+          <ul class="flag-list" id="flag-list">
+          </ul>
+        </div>
+        
+        <div class="action-buttons">
+          <button class="action-btn download-btn" onclick="downloadReport()" aria-describedby="download-help">
+            Download Report
+          </button>
+          <a href="report.html" class="action-btn report-btn" aria-describedby="report-help">
+            Report as Scam
+          </a>
+          <div id="download-help" style="display: none;">Download a detailed analysis report</div>
+          <div id="report-help" style="display: none;">Report this as a scam to help others</div>
+        </div>
+      </div>
+    </div>
+  </main>
 
-  <script>
-    async function analyzeJobOffer() {
-      const jobOffer = document.getElementById('jobOffer').value;
-      const resultsSection = document.getElementById('results');
-      const riskScoreValue = document.getElementById('risk-score-value');
-      const progressFill = document.getElementById('progress-fill');
-      const riskLevel = document.getElementById('risk-level');
-      const recommendation = document.getElementById('recommendation');
-      const flagList = document.getElementById('flag-list');
-      const checkBtn = document.querySelector('.check-btn');
-
-      if (!jobOffer.trim()) {
-        alert("Please paste a job offer to analyze.");
-        return;
-      }
-      
-      // Show loading state
-      checkBtn.textContent = 'Analyzing...';
-      checkBtn.disabled = true;
-
-      try {
-        const response = await fetch("http://127.0.0.1:5000/predict", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: jobOffer })
-        });
-
-        const data = await response.json();
-
-        // Store the analysis data globally for the download function
-        window.currentAnalysisData = data;
-
-        // Update UI with new data
-        const scamRisk = Math.round(data.confidence * 100);
-        const isScam = data.is_scam;
-        
-        resultsSection.style.display = 'block';
-        resultsSection.scrollIntoView({ behavior: 'smooth' });
-
-        riskScoreValue.textContent = scamRisk + "%";
-        progressFill.style.width = scamRisk + "%";
-        progressFill.style.background = isScam ? "#ff4d4d" : "#00d26a";
-        
-        riskLevel.textContent = data.risk_level;
-        riskLevel.style.color = isScam ? '#ff4d4d' : '#00d26a';
-        recommendation.textContent = data.recommendation;
-        
-        // Populate flags and change dot color based on scam status
-        flagList.innerHTML = '';
-        if (data.fraud_indicators.length > 0) {
-            data.fraud_indicators.forEach(flag => {
-                const listItem = document.createElement('li');
-                listItem.className = 'flag-item';
-                listItem.textContent = flag;
-                
-                // Change dot color based on scam status
-                if (isScam) {
-                  listItem.style.setProperty('--dot-color', '#ff4d4d');
-                } else {
-                  listItem.style.setProperty('--dot-color', '#00d26a');
-                }
-                
-                flagList.appendChild(listItem);
-            });
-        } else {
-            const listItem = document.createElement('li');
-            listItem.className = 'flag-item';
-            listItem.textContent = "No specific flags detected.";
-            
-            if (isScam) {
-              listItem.style.setProperty('--dot-color', '#ff4d4d');
-            } else {
-              listItem.style.setProperty('--dot-color', '#00d26a');
-            }
-            
-            flagList.appendChild(listItem);
-        }
-
-      } catch (error) {
-        console.error("Prediction failed:", error);
-        alert("Prediction failed. Check Flask server is running.");
-      } finally {
-          // Revert loading state
-          checkBtn.textContent = 'Check Now';
-          checkBtn.disabled = false;
-      }
-    }
-    
-    // Function to generate and download the report
-    function downloadReport() {
-        const data = window.currentAnalysisData;
-        if (!data) {
-            alert("Please analyze a job offer first.");
-            return;
-        }
-
-        const reportContent = `
-ScamScreener Analysis Report
-
-Date: ${new Date().toLocaleString()}
------------------------------------
-Original Text:
-${document.getElementById('jobOffer').value}
-
------------------------------------
-Summary:
-Scam Risk Score: ${Math.round(data.confidence * 100)}%
-Risk Level: ${data.risk_level}
-Recommendation: ${data.recommendation}
-Suggested Action: ${data.suggested_action}
-
------------------------------------
-Breakdown:
-Fraud Indicators Detected (${data.indicator_count}):
-${data.fraud_indicators.length > 0 ? data.fraud_indicators.map(flag => `* ${flag}`).join('\n') : '* None'}
-
-ML Score: ${data.ml_score}
-Pattern Score: ${data.pattern_score}
-`;
-
-        const blob = new Blob([reportContent], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'scamscreener_report.txt';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    }
-
-    document.querySelectorAll('.action-btn').forEach(btn => {
-      btn.addEventListener('click', function () {
-        this.style.transform = 'scale(0.95)';
-        setTimeout(() => {
-          this.style.transform = 'scale(1)';
-        }, 150);
-      });
-    });
-  </script>
-  <script src="static/script.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>
