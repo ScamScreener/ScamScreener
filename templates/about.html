@@ -1,200 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ScamScreener - About</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #1a1a1a;
-      color: white;
-      min-height: 100vh;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 20px;
-    }
-
-    .header {
-      padding: 20px 0;
-      border-bottom: 1px solid #2a2a2a;
-      background: rgba(26, 26, 26, 0.95);
-      backdrop-filter: blur(10px);
-    }
-
-    .nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      font-size: 20px;
-      font-weight: 600;
-    }
-
-    .logo::before {
-      content: "🛡️";
-      margin-right: 8px;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 30px;
-      list-style: none;
-    }
-
-    .nav-links a {
-      color: #9ca3af;
-      text-decoration: none;
-      font-size: 14px;
-      transition: color 0.3s;
-    }
-
-    .nav-links a:hover,
-    .nav-links a.active {
-      color: #4a9eff;
-    }
-
-    .sign-up-btn {
-      background: #4a9eff;
-      color: white;
-      padding: 8px 20px;
-      border-radius: 20px;
-      text-decoration: none;
-      font-size: 14px;
-      transition: background 0.3s;
-    }
-
-    .sign-up-btn:hover {
-      background: #3a8eef;
-    }
-
-    .main-content {
-      padding: 60px 0;
-      max-width: 800px;
-      margin: 0 auto;
-    }
-
-    .page-title {
-      font-size: 48px;
-      font-weight: 700;
-      margin-bottom: 40px;
-      text-align: center;
-    }
-
-    .section {
-      margin-bottom: 50px;
-    }
-
-    .section-title {
-      font-size: 24px;
-      font-weight: 600;
-      margin-bottom: 20px;
-    }
-
-    .section-text {
-      font-size: 16px;
-      color: #9ca3af;
-      line-height: 1.8;
-    }
-
-    @media (max-width: 768px) {
-      .nav-links {
-        display: none;
-      }
-
-      .page-title {
-        font-size: 36px;
-      }
-    }
-footer {
-  text-align: center;
-  margin-top: 60px;
-  padding: 20px 0;
-  border-top: 1px solid #3a3a3a;
-  color: #6b7280;
-  font-size: 14px;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ScamScreener - About</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/about.css') }}">
 </head>
 <body>
-  <header class="header">
-    <div class="container">
-      <nav class="nav">
-        <div class="logo">ScamScreener</div>
-        <ul class="nav-links">
-          <li><a href="index.html">Home</a></li>
-          <li><a href="dashboard.html">Dashboard</a></li>
-          <li><a href="howitworks.html">How It Works</a></li>
-          <li><a href="report.html">Report Scam</a></li>
-          <li><a href="about.html" class="active">About</a></li>
-          <li><a href="pricing.html">Pricing</a></li>
-          <li><a href="login.html" id="nav-login-link">Login</a></li>
-          <li><a href="signup.html" id="nav-signup-link">Sign Up</a></li>
-          <li><a href="#" id="nav-logout-link" onclick="logout()">Logout</a></li>
-        </ul>
-        <a href="report.html" class="sign-up-btn">Try for Free</a>
-      </nav>
-    </div>
-  </header>
-</ul>
-        </ul>
-        <a href="report.html" class="sign-up-btn">Try for Free</a>
-      </nav>
-    </div>
-  </header>
+  <header class="header">
+    <div class="container">
+      <nav class="nav">
+        <div class="logo">ScamScreener</div>
+        <ul class="nav-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="dashboard.html">Dashboard</a></li>
+          <li><a href="howitworks.html">How It Works</a></li>
+          <li><a href="report.html">Report Scam</a></li>
+          <li><a href="about.html" class="active">About</a></li>
+          <li><a href="pricing.html">Pricing</a></li>
+          <li><a href="login.html" id="nav-login-link">Login</a></li>
+          <li><a href="signup.html" id="nav-signup-link">Sign Up</a></li>
+          <li><a href="#" id="nav-logout-link" onclick="logout()">Logout</a></li>
+        </ul>
+        <a href="report.html" class="sign-up-btn">Try for Free</a>
+      </nav>
+    </div>
+  </header>
 
-  <main class="container">
-    <div class="main-content">
-      <h1 class="page-title">About ScamScreener</h1>
+  <main class="container">
+    <div class="main-content">
+      <h1 class="page-title">About ScamScreener</h1>
 
-      <div class="section">
-        <h2 class="section-title">Our Mission</h2>
-        <p class="section-text">
-          ScamScreener is on a mission to protect job seekers from fraudulent employment offers. With job scams rising across the globe, we believe everyone deserves to search for work safely and confidently. We use AI and modern detection methods to screen suspicious job content and highlight risk factors clearly and quickly.
-        </p>
-      </div>
+      <div class="section">
+        <h2 class="section-title">Our Mission</h2>
+        <p class="section-text">
+          ScamScreener is on a mission to protect job seekers from fraudulent employment offers. With job scams rising across the globe, we believe everyone deserves to search for work safely and confidently. We use AI and modern detection methods to screen suspicious job content and highlight risk factors clearly and quickly.
+        </p>
+      </div>
 
-      <div class="section">
-        <h2 class="section-title">Why We Built This</h2>
-        <p class="section-text">
-          Too many people have lost time, money, and personal data to fake recruiters. We created ScamScreener to give users instant tools to check offers before trusting them. Our platform brings together experience in cybersecurity, NLP, and user-centered design to provide a practical, free tool for anyone online.
-        </p>
-      </div>
+      <div class="section">
+        <h2 class="section-title">Why We Built This</h2>
+        <p class="section-text">
+          Too many people have lost time, money, and personal data to fake recruiters. We created ScamScreener to give users instant tools to check offers before trusting them. Our platform brings together experience in cybersecurity, NLP, and user-centered design to provide a practical, free tool for anyone online.
+        </p>
+      </div>
 
-      <div class="section">
-        <h2 class="section-title">What We Believe</h2>
-        <p class="section-text">
-          - Everyone deserves digital safety.<br>
-          - AI can empower everyday people.<br>
-          - Transparency, privacy, and accuracy matter.<br>
-          - The best protection is simple and accessible.
-        </p>
-      </div>
+      <div class="section">
+        <h2 class="section-title">What We Believe</h2>
+        <p class="section-text">
+          - Everyone deserves digital safety.<br>
+          - AI can empower everyday people.<br>
+          - Transparency, privacy, and accuracy matter.<br>
+          - The best protection is simple and accessible.
+        </p>
+      </div>
 
-      <div class="section">
-        <h2 class="section-title">Contact Us</h2>
-        <p class="section-text">
-          Have feedback or want to collaborate? Reach out at <strong style="color:#4a9eff;">support@scamscreener.ai</strong>
-        </p>
-      </div>
-    </div>
-  </main>
-<script src="static/script.js"></script>
+      <div class="section">
+        <h2 class="section-title">Contact Us</h2>
+        <p class="section-text">
+          Have feedback or want to collaborate? Reach out at <strong style="color:#4a9eff;">support@scamscreener.ai</strong>
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2025 ScamScreener. All rights reserved.
+  </footer>
 </body>
 </html>
-  <footer>
-    &copy; 2025 ScamScreener. All rights reserved.
-  </footer>
