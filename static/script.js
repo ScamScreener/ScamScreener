@@ -4,7 +4,7 @@ function logout() {
   localStorage.clear();
   window.location.href = "login.html";
 }
-
+jm
 async function analyzeJobOffer() {
   const jobOffer = document.getElementById('jobOffer').value;
   const resultsSection = document.getElementById('results');
