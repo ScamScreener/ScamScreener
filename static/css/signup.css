@@ -1,0 +1,81 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #1a1a1a;
+  color: white;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+.auth-box {
+  background: #2a2a2a;
+  padding: 40px;
+  border-radius: 12px;
+  border: 1px solid #3a3a3a;
+  width: 100%;
+  max-width: 400px;
+}
+h1 {
+  font-size: 28px;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #4a9eff;
+}
+.form-group {
+  margin-bottom: 20px;
+}
+label {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+input[type="text"], input[type="email"], input[type="password"] {
+  width: 100%;
+  padding: 14px;
+  background: #1a1a1a;
+  border: 1px solid #3a3a3a;
+  border-radius: 8px;
+  color: white;
+  font-size: 14px;
+}
+input:focus {
+  border-color: #4a9eff;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(74,158,255,0.2);
+}
+.submit-btn {
+  width: 100%;
+  padding: 14px;
+  background: #4a9eff;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: all 0.3s ease;
+}
+.submit-btn:hover {
+  background: #3a8eef;
+  transform: translateY(-2px);
+}
+.switch-link {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+  color: #9ca3af;
+}
+.switch-link a {
+  color: #4a9eff;
+  text-decoration: none;
+}
+.error-message {
+  color: #ff4a4a;
+  font-size: 14px;
+  text-align: center;
+  margin-top: 10px;
+  display: none;
+}
