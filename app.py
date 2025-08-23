@@ -1,8 +1,6 @@
-from flask import send_from_directory, render_template
-import os
-
-from flask import Flask, request, jsonify
+from flask import send_from_directory, render_template, Flask, request, jsonify
 from flask_cors import CORS
+import os
 import joblib
 import pandas as pd
 import numpy as np
@@ -14,24 +12,23 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
-import os
 import pickle
 import json
-import datetime
-
+from datetime import datetime
 import hashlib
 import logging
 from collections import Counter
 import unicodedata
-import sqlite3
-from flask import Flask, request, jsonify
+
+# Use a connection pool for better performance in a web service
+import sqlalchemy
+from sqlalchemy.pool import QueuePool
+from sqlalchemy.orm import sessionmaker, Session
 from flask_jwt_extended import (
     JWTManager, create_access_token, create_refresh_token,
     jwt_required, get_jwt_identity, get_jwt
 )
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime   # ✅ add this
-from flask_cors import CORS
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -50,63 +47,65 @@ model_stats = {"predictions": 0, "accuracy_rate": 0.0}
 # === Auth & Database Configuration ===
 app.config["JWT_SECRET_KEY"] = os.environ.get("JWT_SECRET_KEY", "change-this-in-production")
 jwt = JWTManager(app)
-from flask_jwt_extended import get_jwt
 
-# Called on every protected endpoint to see if token is revoked
-@jwt.token_in_blocklist_loader
-def check_if_token_revoked(jwt_header, jwt_payload: dict) -> bool:
-    jti = jwt_payload.get("jti")
-    conn = sqlite3.connect(DB_NAME)
-    c = conn.cursor()
-    c.execute("SELECT 1 FROM revoked_tokens WHERE jti = ?", (jti,))
-    row = c.fetchone()
-    conn.close()
-    return row is not None  # True => revoked
+# --- PostgreSQL Setup ---
+DATABASE_URL = os.environ.get("DATABASE_URL")
+if not DATABASE_URL:
+    raise ValueError("No DATABASE_URL environment variable set")
 
-DB_NAME = os.environ.get("DB_NAME", "scamscreener.db")
+# Create a connection pool using SQLAlchemy
+engine = sqlalchemy.create_engine(DATABASE_URL, poolclass=QueuePool, pool_size=10, max_overflow=20)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-def get_db_conn():
-    conn = sqlite3.connect(DB_NAME)
-    conn.row_factory = sqlite3.Row
-    return conn
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 def init_db():
-    conn = sqlite3.connect(DB_NAME)
-    c = conn.cursor()
+    conn = engine.connect()
+    with conn.begin() as transaction:
+        # PostgreSQL specific schema
+        conn.execute(sqlalchemy.text('''CREATE TABLE IF NOT EXISTS users (
+            id SERIAL PRIMARY KEY,
+            username TEXT UNIQUE,
+            email TEXT UNIQUE,
+            password TEXT,
+            first_name TEXT,
+            last_name TEXT,
+            created_at TIMESTAMP WITH TIME ZONE
+        )'''))
 
-    # Users table
-    c.execute('''CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT UNIQUE,
-        email TEXT UNIQUE,
-        password TEXT,
-        first_name TEXT,
-        last_name TEXT,
-        created_at TEXT
-    )''')
-
-    # Reports table (linked to users)
-    c.execute('''CREATE TABLE IF NOT EXISTS reports (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER,
-        message TEXT,
-        scam_type TEXT,
-        company TEXT,
-        created_at TEXT,
-        FOREIGN KEY(user_id) REFERENCES users(id)
-    )''')
-
-    # JWT blocklist table (for logout / revoked tokens)
-    c.execute('''CREATE TABLE IF NOT EXISTS revoked_tokens (
-        jti TEXT PRIMARY KEY,
-        created_at TEXT
-    )''')
-
-    conn.commit()
+        conn.execute(sqlalchemy.text('''CREATE TABLE IF NOT EXISTS reports (
+            id SERIAL PRIMARY KEY,
+            user_id INTEGER,
+            message TEXT,
+            scam_type TEXT,
+            company TEXT,
+            created_at TIMESTAMP WITH TIME ZONE,
+            FOREIGN KEY(user_id) REFERENCES users(id)
+        )'''))
+        
+        conn.execute(sqlalchemy.text('''CREATE TABLE IF NOT EXISTS revoked_tokens (
+            jti TEXT PRIMARY KEY,
+            created_at TIMESTAMP WITH TIME ZONE
+        )'''))
     conn.close()
 
 
 init_db()
+
+@jwt.token_in_blocklist_loader
+def check_if_token_revoked(jwt_header, jwt_payload: dict) -> bool:
+    jti = jwt_payload.get("jti")
+    with engine.connect() as conn:
+        result = conn.execute(sqlalchemy.text("SELECT 1 FROM revoked_tokens WHERE jti = :jti"), {"jti": jti}).fetchone()
+    return result is not None
+
+# The rest of your code remains largely the same.
+# Changes are only in database interactions.
 
 class AdvancedFeatureExtractor:
     """Advanced feature extraction for fraud detection"""
@@ -939,36 +938,38 @@ def signup():
         return jsonify({"error": "Missing required fields"}), 400
 
     hashed_password = generate_password_hash(password)
-    created_at = datetime.utcnow().isoformat()
+    created_at = datetime.utcnow()
 
-    try:
-        conn = sqlite3.connect(DB_NAME)
-        c = conn.cursor()
-        c.execute(
-            "INSERT INTO users (username, email, password, first_name, last_name, created_at) VALUES (?, ?, ?, ?, ?, ?)",
-            (username, email, hashed_password, first_name, last_name, created_at),
-        )
-        conn.commit()
-        user_id = c.lastrowid
-        conn.close()
+    with engine.connect() as conn:
+        with conn.begin() as transaction:
+            try:
+                result = conn.execute(sqlalchemy.text(
+                    "INSERT INTO users (username, email, password, first_name, last_name, created_at) VALUES (:username, :email, :password, :first_name, :last_name, :created_at) RETURNING id"
+                ), {
+                    "username": username,
+                    "email": email,
+                    "password": hashed_password,
+                    "first_name": first_name,
+                    "last_name": last_name,
+                    "created_at": created_at
+                }).fetchone()
+                user_id = result[0]
+                
+                access_token = create_access_token(identity=str(user_id))
+                refresh_token = create_refresh_token(identity=str(user_id))
 
-        # ✅ FIX: cast user_id to str for JWT
-        access_token = create_access_token(identity=str(user_id))
-        refresh_token = create_refresh_token(identity=str(user_id))
-
-        return jsonify({
-            "msg": "User created successfully",
-            "access_token": access_token,
-            "refresh_token": refresh_token,
-            "user": {
-                "id": user_id,
-                "username": username,
-                "email": email
-            }
-        }), 201
-
-    except sqlite3.IntegrityError as e:
-        return jsonify({"error": "Username or email already exists"}), 409
+                return jsonify({
+                    "msg": "User created successfully",
+                    "access_token": access_token,
+                    "refresh_token": refresh_token,
+                    "user": {
+                        "id": user_id,
+                        "username": username,
+                        "email": email
+                    }
+                }), 201
+            except sqlalchemy.exc.IntegrityError as e:
+                return jsonify({"error": "Username or email already exists"}), 409
 
 
 @app.route("/auth/login", methods=["POST"])
@@ -977,16 +978,11 @@ def login():
     username_or_email = data.get("username_or_email")
     password = data.get("password")
 
-    conn = sqlite3.connect(DB_NAME)
-    c = conn.cursor()
-    c.execute("SELECT * FROM users WHERE username=? OR email=?", (username_or_email, username_or_email))
-    user = c.fetchone()
-    conn.close()
-
-    if user and check_password_hash(user[3], password):
-        user_id = user[0]
-
-        # ✅ FIX: cast user_id to str for JWT
+    with engine.connect() as conn:
+        result = conn.execute(sqlalchemy.text("SELECT id, username, email, password FROM users WHERE username=:uoe OR email=:uoe"), {"uoe": username_or_email}).fetchone()
+    
+    if result and check_password_hash(result[3], password):
+        user_id = result[0]
         access_token = create_access_token(identity=str(user_id))
         refresh_token = create_refresh_token(identity=str(user_id))
 
@@ -995,52 +991,45 @@ def login():
             "refresh_token": refresh_token,
             "user": {
                 "id": user_id,
-                "username": user[1],
-                "email": user[2]
+                "username": result[1],
+                "email": result[2]
             }
         }), 200
     else:
         return jsonify({"error": "Invalid credentials"}), 401
+
 @app.route("/dashboard/stats", methods=["GET"])
 @jwt_required()
 def dashboard_stats():
-    conn = sqlite3.connect(DB_NAME)
-    c = conn.cursor()
-    c.execute("SELECT COUNT(*) FROM users")
-    total_users = c.fetchone()[0]
-    c.execute("SELECT COUNT(*) FROM reports")
-    total_reports = c.fetchone()[0]
-    conn.close()
+    with engine.connect() as conn:
+        total_users = conn.execute(sqlalchemy.text("SELECT COUNT(*) FROM users")).scalar()
+        total_reports = conn.execute(sqlalchemy.text("SELECT COUNT(*) FROM reports")).scalar()
     return jsonify({"total_users": total_users, "total_reports": total_reports})
 
 @app.route("/dashboard/reports", methods=["GET"])
 @jwt_required()
 def dashboard_reports():
-    conn = sqlite3.connect(DB_NAME)
-    c = conn.cursor()
-    c.execute("SELECT id, message, scam_type, company, created_at FROM reports ORDER BY id DESC LIMIT 10")
-    rows = c.fetchall()
-    conn.close()
+    with engine.connect() as conn:
+        result = conn.execute(sqlalchemy.text("SELECT id, message, scam_type, company, created_at FROM reports ORDER BY id DESC LIMIT 10")).fetchall()
     reports = [
         {"id": r[0], "message": r[1], "scam_type": r[2], "company": r[3], "created_at": r[4]}
-        for r in rows
+        for r in result
     ]
     return jsonify(reports)
 
 @app.route("/auth/logout", methods=["POST"])
-@jwt_required()  # require a valid access token
+@jwt_required()
 def logout():
     jwt_payload = get_jwt()
     jti = jwt_payload.get("jti")
-    created_at = datetime.datetime.utcnow().isoformat()
+    created_at = datetime.utcnow()
 
-    conn = sqlite3.connect(DB_NAME)
-    c = conn.cursor()
-    try:
-        c.execute("INSERT OR IGNORE INTO revoked_tokens (jti, created_at) VALUES (?, ?)", (jti, created_at))
-        conn.commit()
-    finally:
-        conn.close()
+    with engine.connect() as conn:
+        try:
+            conn.execute(sqlalchemy.text("INSERT INTO revoked_tokens (jti, created_at) VALUES (:jti, :created_at) ON CONFLICT (jti) DO NOTHING"), {"jti": jti, "created_at": created_at})
+            conn.commit()
+        except Exception as e:
+            logger.error(f"Error revoking token: {e}")
 
     return jsonify({"message": "Logged out"}), 200
 
@@ -1049,7 +1038,7 @@ def logout():
 @jwt_required(refresh=True)
 def refresh_access():
     current_user = get_jwt_identity()
-    new_token = create_access_token(identity=current_user, expires_delta=datetime.timedelta(hours=1))
+    new_token = create_access_token(identity=current_user)
     return jsonify({"access_token": new_token})
 
 # === Reports Endpoints ===
@@ -1058,7 +1047,7 @@ def refresh_access():
 def submit_report():
     try:
         user_id = get_jwt_identity()
-        data = request.get_json(force=True)  # force=True handles bad headers safely
+        data = request.get_json(force=True)
 
         message = data.get("message")
         scam_type = data.get("scam_type")
@@ -1067,28 +1056,28 @@ def submit_report():
         if not message or not scam_type:
             return jsonify({"error": "Message and scam_type are required"}), 400
 
-        conn = sqlite3.connect(DB_NAME)
-        c = conn.cursor()
-        # Match your schema order: message, scam_type, company, created_at, user_id
-        c.execute("""
-            INSERT INTO reports (message, scam_type, company, created_at, user_id)
-            VALUES (?, ?, ?, datetime('now'), ?)
-        """, (message, scam_type, company, user_id))
-        conn.commit()
-        report_id = c.lastrowid
-        conn.close()
-
-        return jsonify({
-            "message": "Report submitted successfully",
-            "report": {
-                "id": report_id,
-                "user_id": user_id,
+        with engine.connect() as conn:
+            conn.execute(sqlalchemy.text("""
+                INSERT INTO reports (message, scam_type, company, created_at, user_id)
+                VALUES (:message, :scam_type, :company, NOW(), :user_id)
+            """), {
                 "message": message,
                 "scam_type": scam_type,
                 "company": company,
-                "created_at": datetime.datetime.now().isoformat()
-            }
-        }), 201
+                "user_id": int(user_id)
+            })
+            conn.commit()
+            
+            return jsonify({
+                "message": "Report submitted successfully",
+                "report": {
+                    "user_id": user_id,
+                    "message": message,
+                    "scam_type": scam_type,
+                    "company": company,
+                    "created_at": datetime.now().isoformat()
+                }
+            }), 201
 
     except Exception as e:
         print("❌ Report error:", str(e))
@@ -1098,21 +1087,18 @@ def submit_report():
 @app.route("/reports", methods=["GET"])
 def list_reports():
     try:
-        conn = get_db_conn()
-        c = conn.cursor()
-        c.execute("SELECT r.id, r.message, r.scam_type, r.company, r.created_at, r.user_id, u.username FROM reports r LEFT JOIN users u ON r.user_id = u.id ORDER BY r.created_at DESC")
-        rows = c.fetchall()
-        conn.close()
+        with engine.connect() as conn:
+            result = conn.execute(sqlalchemy.text("SELECT r.id, r.message, r.scam_type, r.company, r.created_at, r.user_id, u.username FROM reports r LEFT JOIN users u ON r.user_id = u.id ORDER BY r.created_at DESC")).fetchall()
         items = []
-        for r in rows:
+        for r in result:
             items.append({
-                "id": r["id"],
-                "message": r["message"],
-                "scam_type": r["scam_type"],
-                "company": r["company"],
-                "created_at": r["created_at"],
-                "user_id": r["user_id"],
-                "username": r["username"]
+                "id": r[0],
+                "message": r[1],
+                "scam_type": r[2],
+                "company": r[3],
+                "created_at": r[4],
+                "user_id": r[5],
+                "username": r[6]
             })
         return jsonify(items), 200
     except Exception as e:
@@ -1123,17 +1109,14 @@ def list_reports():
 @app.route("/db_stats", methods=["GET"])
 def db_stats():
     try:
-        conn = get_db_conn()
-        c = conn.cursor()
-        c.execute("SELECT COUNT(*) AS c FROM users")
-        total_users = c.fetchone()["c"]
-        c.execute("SELECT COUNT(*) AS c FROM reports")
-        total_reports = c.fetchone()["c"]
-        conn.close()
+        with engine.connect() as conn:
+            total_users = conn.execute(sqlalchemy.text("SELECT COUNT(*) FROM users")).scalar()
+            total_reports = conn.execute(sqlalchemy.text("SELECT COUNT(*) FROM reports")).scalar()
         return jsonify({"total_users": total_users, "total_reports": total_reports}), 200
     except Exception as e:
         logger.error(f"DB stats error: {e}")
         return jsonify({"error": "db_stats_failed", "details": str(e)}), 500
+
 # ==========================
 # Serve Frontend HTML pages
 # ==========================
@@ -1151,7 +1134,7 @@ def signup_page():
     return render_template("signup.html")
 
 @app.route("/dashboard")
-@jwt_required(optional=True)   # dashboard requires login, but page can still load
+@jwt_required(optional=True)
 def dashboard_page():
     return render_template("dashboard.html")
 
@@ -1192,5 +1175,6 @@ if __name__ == "__main__":
     print("   • GET /health - Health check")
     print("   • GET /stats - Model statistics")
     
-    if __name__ == "__main__":
-        app.run(host="0.0.0.0", port=5000, debug=True)
+    # Use Gunicorn for production instead of app.run
+    # The Procfile will handle this on Render
+    app.run(host="0.0.0.0", port=5000, debug=True)
