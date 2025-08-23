@@ -1,92 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ScamScreener - Detect Fake Job Offers</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ScamScreener - Detect Fake Job Offers</title>
+  <link rel="stylesheet" href="static/css/main.css">
+  <link rel="stylesheet" href="static/css/header.css">
+  <link rel="stylesheet" href="static/css/components/results.css">
 </head>
 <body>
-  <header>
-    <div class="container">
-      <nav>
-        <div class="logo">ScamScreener</div>
-        <ul class="nav-links">
-         <ul class="nav-links">
-           <li><a href="index.html" class="active">Home</a></li>
-           <li><a href="dashboard.html">Dashboard</a></li>
-           <li><a href="howitworks.html">How it Works</a></li>
-           <li><a href="pricing.html">Pricing</a></li>
-           <li><a href="report.html">Report</a></li>           
-           <li><a href="about.html">About</a></li>
-           <li><a href="contact.html">Contact</a></li>
-           <li><a href="login.html" id="nav-login-link">Login</a></li>
-           <li><a href="signup.html" id="nav-signup-link">Sign Up</a></li>
-           <li><a href="#" id="nav-logout-link" onclick="logout()">Logout</a></li>
-</ul>
-        </ul>
-      </nav>
-    </div>
-  </header>
+  <header>
+    <div class="container">
+      <nav>
+        <div class="logo">ScamScreener</div>
+        <ul class="nav-links">
+          <li><a href="index.html" class="active">Home</a></li>
+          <li><a href="dashboard.html">Dashboard</a></li>
+          <li><a href="howitworks.html">How it Works</a></li>
+          <li><a href="pricing.html">Pricing</a></li>
+          <li><a href="report.html">Report</a></li>           
+          <li><a href="about.html">About</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="login.html" id="nav-login-link">Login</a></li>
+          <li><a href="signup.html" id="nav-signup-link">Sign Up</a></li>
+          <li><a href="#" id="nav-logout-link" onclick="logout()">Logout</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
 
-  <main class="container">
-    <div class="main-content">
-      <h1 class="hero-title">Detect Fake Job Offers Instantly</h1>
-      <p class="hero-subtitle">Paste the job offer message or email below to check for potential scams using our advanced AI detection system.</p>
+  <main class="container">
+    <div class="main-content">
+      <h1 class="hero-title">Detect Fake Job Offers Instantly</h1>
+      <p class="hero-subtitle">Paste the job offer message or email below to check for potential scams using our advanced AI detection system.</p>
 
-      <div class="form-section">
-        <div class="input-container">
-          <textarea 
-            class="job-input"
-            id="jobOffer"
-            placeholder="Paste job offer content here..."
-            aria-label="Job offer text to analyze"
-          ></textarea>
-        </div>
-        <button class="check-btn" onclick="analyzeJobOffer()" aria-describedby="analysis-help">
-          Check Now
-        </button>
-        <div id="analysis-help" style="display: none;">This will analyze your job offer for potential scam indicators</div>
-      </div>
+      <div class="form-section">
+        <div class="input-container">
+          <textarea 
+            class="job-input"
+            id="jobOffer"
+            placeholder="Paste job offer content here..."
+            aria-label="Job offer text to analyze"
+          ></textarea>
+        </div>
+        <button class="check-btn" onclick="analyzeJobOffer()" aria-describedby="analysis-help">
+          Check Now
+        </button>
+        <div id="analysis-help" style="display: none;">This will analyze your job offer for potential scam indicators</div>
+      </div>
 
-      <div class="results-section" id="results" style="display: none;" role="region" aria-label="Analysis results">
-        <h2 class="results-title">Analysis Results</h2>
+      <div class="results-section" id="results" style="display: none;" role="region" aria-label="Analysis results">
+        <h2 class="results-title">Analysis Results</h2>
 
-        <div class="analysis-summary">
-            <div class="risk-score">
-                <div class="risk-label">Scam Risk Score</div>
-                <div class="risk-percentage" id="risk-score-value" aria-live="polite">0%</div>
-            </div>
-            <div class="risk-level-display">
-                <div class="level" id="risk-level" aria-live="polite"></div>
-                <div class="recommendation" id="recommendation"></div>
-            </div>
-        </div>
+        <div class="analysis-summary">
+            <div class="risk-score">
+                <div class="risk-label">Scam Risk Score</div>
+                <div class="risk-percentage" id="risk-score-value" aria-live="polite">0%</div>
+            </div>
+            <div class="risk-level-display">
+                <div class="level" id="risk-level" aria-live="polite"></div>
+                <div class="recommendation" id="recommendation"></div>
+            </div>
+        </div>
 
-        <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-          <div class="progress-fill" id="progress-fill"></div>
-        </div>
-        
-        <div class="flags-section">
-          <h3 class="flags-title">Flags Detected</h3>
-          <ul class="flag-list" id="flag-list">
-          </ul>
-        </div>
-        
-        <div class="action-buttons">
-          <button class="action-btn download-btn" onclick="downloadReport()" aria-describedby="download-help">
-            Download Report
-          </button>
-          <a href="report.html" class="action-btn report-btn" aria-describedby="report-help">
-            Report as Scam
-          </a>
-          <div id="download-help" style="display: none;">Download a detailed analysis report</div>
-          <div id="report-help" style="display: none;">Report this as a scam to help others</div>
-        </div>
-      </div>
-    </div>
-  </main>
+        <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        
+        <div class="flags-section">
+          <h3 class="flags-title">Flags Detected</h3>
+          <ul class="flag-list" id="flag-list">
+          </ul>
+        </div>
+        
+        <div class="action-buttons">
+          <button class="action-btn download-btn" onclick="downloadReport()" aria-describedby="download-help">
+            Download Report
+          </button>
+          <a href="report.html" class="action-btn report-btn" aria-describedby="report-help">
+            Report as Scam
+          </a>
+          <div id="download-help" style="display: none;">Download a detailed analysis report</div>
+          <div id="report-help" style="display: none;">Report this as a scam to help others</div>
+        </div>
+      </div>
+    </div>
+  </main>
 
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+  <script src="static/js/main.js"></script>
+  <script src="static/js/analysis.js"></script>
+  <script src="static/js/ui.js"></script>
 </body>
 </html>
